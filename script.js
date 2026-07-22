@@ -35,7 +35,7 @@ const state = {
     ctx.fillStyle = 'rgba(3, 5, 3, 0.10)';
     ctx.fillRect(0, 0, width, height);
 
-    ctx.font = fontSize + \"px 'JetBrains Mono', monospace\";
+    ctx.font = fontSize + "px 'JetBrains Mono', monospace";
 
     for (let i = 0; i < drops.length; i++) {
       const ch = chars[(Math.random() * chars.length) | 0];
@@ -95,17 +95,17 @@ const bootScreen = document.getElementById('bootScreen');
 const enterBtn = document.getElementById('enterBtn');
 
 const bootLines = [
-  { html: '<span class=\"dim\">[boot]</span> chai-vault-loader v3.7.1 — <span class=\"hi\">initializing</span>...', delay: 90 },
-  { html: '<span class=\"dim\">[hw]</span>   detecting entropy source ......... <span class=\"ok\">OK</span>', delay: 220 },
-  { html: '<span class=\"dim\">[mem]</span>  allocating session heap .......... <span class=\"ok\">OK</span>', delay: 180 },
-  { html: '<span class=\"dim\">[net]</span>  isolating network interfaces ..... <span class=\"ok\">AIRGAPPED</span>', delay: 240 },
-  { html: '<span class=\"dim\">[api]</span>  window.crypto.subtle ............. <span class=\"ok\">AVAILABLE</span>', delay: 180 },
-  { html: '<span class=\"dim\">[key]</span>  loading PBKDF2 module ............ <span class=\"ok\">READY</span>', delay: 200 },
-  { html: '<span class=\"dim\">[key]</span>  arming AES-256-GCM ............... <span class=\"ok\">READY</span>', delay: 200 },
-  { html: '<span class=\"dim\">[sec]</span>  scanning for storage leaks ....... <span class=\"ok\">NONE</span>', delay: 220 },
-  { html: '<span class=\"dim\">[sec]</span>  purging localStorage ............. <span class=\"ok\">CLEAN</span>', delay: 180 },
-  { html: '<span class=\"warn\">[!]</span>    all data lives in RAM. refresh = wipe.', delay: 260 },
-  { html: '<span class=\"dim\">[sys]</span>  awaiting root authorization ......', delay: 260 }
+  { html: '<span class="dim">[boot]</span> chai-vault-loader v3.7.1 — <span class="hi">initializing</span>...', delay: 90 },
+  { html: '<span class="dim">[hw]</span>   detecting entropy source ......... <span class="ok">OK</span>', delay: 220 },
+  { html: '<span class="dim">[mem]</span>  allocating session heap .......... <span class="ok">OK</span>', delay: 180 },
+  { html: '<span class="dim">[net]</span>  isolating network interfaces ..... <span class="ok">AIRGAPPED</span>', delay: 240 },
+  { html: '<span class="dim">[api]</span>  window.crypto.subtle ............. <span class="ok">AVAILABLE</span>', delay: 180 },
+  { html: '<span class="dim">[key]</span>  loading PBKDF2 module ............ <span class="ok">READY</span>', delay: 200 },
+  { html: '<span class="dim">[key]</span>  arming AES-256-GCM ............... <span class="ok">READY</span>', delay: 200 },
+  { html: '<span class="dim">[sec]</span>  scanning for storage leaks ....... <span class="ok">NONE</span>', delay: 220 },
+  { html: '<span class="dim">[sec]</span>  purging localStorage ............. <span class="ok">CLEAN</span>', delay: 180 },
+  { html: '<span class="warn">[!]</span>    all data lives in RAM. refresh = wipe.', delay: 260 },
+  { html: '<span class="dim">[sys]</span>  awaiting root authorization ......', delay: 260 }
 ];
 
 function appendLine(html) {
@@ -125,7 +125,7 @@ async function runBoot() {
   passPrompt.classList.remove('hidden');
   await typePassword();
   await sleep(300);
-  appendLine('<span class=\"dim\">[auth]</span> verifying keychain ............... <span class=\"ok\">GRANTED</span>');
+  appendLine('<span class="dim">[auth]</span> verifying keychain ............... <span class="ok">GRANTED</span>');
   await sleep(280);
   grantedBlock.classList.remove('hidden');
   enterBtn.focus();
@@ -379,18 +379,18 @@ function updateVaultUI() {
   card.classList.remove('hidden');
   count.textContent = state.vault.length;
   list.innerHTML =
-    '<div class=\"vault-note\">SESSION MEMORY ONLY &mdash; clears on refresh</div>';
+    '<div class="vault-note">SESSION MEMORY ONLY &mdash; clears on refresh</div>';
 
   state.vault.forEach((entry, idx) => {
     const div = document.createElement('div');
     div.className = 'vault-entry';
     div.setAttribute('data-testid', 'vault-entry');
     div.innerHTML = `
-      <div class=\"entry-info\">
-        <div class=\"entry-name\">${escapeHtml(entry.name)}</div>
-        <div class=\"entry-time\">${escapeHtml(entry.timestamp)}</div>
+      <div class="entry-info">
+        <div class="entry-name">${escapeHtml(entry.name)}</div>
+        <div class="entry-time">${escapeHtml(entry.timestamp)}</div>
       </div>
-      <button class=\"ghost mini\" data-testid=\"vault-delete-btn\">delete</button>
+      <button class="ghost mini" data-testid="vault-delete-btn">delete</button>
     `;
     div.querySelector('button').addEventListener('click', () => deleteEntry(idx));
     list.appendChild(div);
@@ -398,8 +398,8 @@ function updateVaultUI() {
 }
 
 function escapeHtml(text) {
-  const map = { '&':'&amp;', '<':'&lt;', '>':'&gt;', '\"':'&quot;', \"'\":'&#039;' };
-  return String(text).replace(/[&<>\"']/g, m => map[m]);
+  const map = { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;' };
+  return String(text).replace(/[&<>"']/g, m => map[m]);
 }
 
 // ---------------------------------------------------------------------------
