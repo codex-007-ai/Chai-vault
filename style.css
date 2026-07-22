@@ -32,6 +32,11 @@
   --error: #ff0000;
 }
 
+.cursor::after{
+  content:"_";
+  animation:blink 1s infinite;
+}
+
 body {
   background: var(--bg-primary);
   color: var(--text-primary);
