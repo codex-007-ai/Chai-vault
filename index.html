@@ -1,154 +1,219 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang=\"en\">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Chai Vault - Privacy-first offline password encryption">
-  <meta name="theme-color" content="#0f172a">
-  <title>🔐 Chai Vault - Offline Encryption</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🔐</text></svg>">
-  <link rel="stylesheet" href="style.css">
+  <meta charset=\"UTF-8\" />
+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />
+  <meta name=\"description\" content=\"Chai Vault — Privacy-first offline password encryption. AES-256-GCM in your browser.\" />
+  <meta name=\"theme-color\" content=\"#00ff9c\" />
+  <title>CHAI://VAULT — offline encryption</title>
+  <link rel=\"icon\" href=\"data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='78' font-size='78'>&#128274;</text></svg>\" />
+  <link href=\"https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=VT323&display=swap\" rel=\"stylesheet\" />
+  <link rel=\"stylesheet\" href=\"style.css\" />
 </head>
-<body>
-<canvas id="matrix"></canvas>
+<body class=\"locked\">
 
-<div id="bootScreen">
-  <div class="boot-text">
-    INITIALIZING CHAI VAULT...<br>
-    LOADING ENCRYPTION MODULE...<br>
-    AES-256 READY<br>
-    SECURE CHANNEL ESTABLISHED<br>
-    ACCESS GRANTED
-  </div>
-</div>  
-<div class="cursor">SYSTEM READY</div>
-<div class="container">
-  <!-- Notification -->
-  <div id="notification" class="notification hidden"></div>
+  <!-- ========== MATRIX BACKGROUND ========== -->
+  <canvas id=\"matrix\" data-testid=\"matrix-canvas\"></canvas>
+  <div class=\"vignette\" aria-hidden=\"true\"></div>
+  <div class=\"scanlines\" aria-hidden=\"true\"></div>
+  <div class=\"grain\" aria-hidden=\"true\"></div>
 
-  <!-- Header -->
-  <div class="header">
-    <div class="logo">🔐 Chai Vault</div>
-    <div class="tagline">Privacy-first offline encryption</div>
-    <div class="subtitle">Nothing leaves your device</div>
-  </div>
+  <!-- ========== BOOT / ACCESS SCREEN ========== -->
+  <section id=\"bootScreen\" data-testid=\"boot-screen\" role=\"dialog\" aria-label=\"System boot sequence\">
+    <div class=\"crt-frame\">
+      <header class=\"crt-topbar\">
+        <span class=\"crt-dot red\"></span>
+        <span class=\"crt-dot amber\"></span>
+        <span class=\"crt-dot green\"></span>
+        <span class=\"crt-title\">/dev/chai-vault — tty1</span>
+        <span class=\"crt-clock\" id=\"crtClock\">--:--:--</span>
+      </header>
 
-  <!-- Secret Key Card -->
-  <div class="card">
-    <div class="card-header">
-      <label>Secret Key</label>
-      <button class="secondary" id="toggleKeyBtn" style="padding: 6px 12px; font-size: 12px;">
-        👁️ <span id="toggleText">Show</span>
+      <div class=\"crt-body\">
+        <pre class=\"ascii-logo\" aria-hidden=\"true\">
+   ██████╗██╗  ██╗ █████╗ ██╗    ██╗   ██╗ █████╗ ██╗   ██╗██╗  ████████╗
+  ██╔════╝██║  ██║██╔══██╗██║    ██║   ██║██╔══██╗██║   ██║██║  ╚══██╔══╝
+  ██║     ███████║███████║██║    ██║   ██║███████║██║   ██║██║     ██║   
+  ██║     ██╔══██║██╔══██║██║    ╚██╗ ██╔╝██╔══██║██║   ██║██║     ██║   
+  ╚██████╗██║  ██║██║  ██║██║     ╚████╔╝ ██║  ██║╚██████╔╝███████╗██║   
+   ╚═════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝      ╚═══╝  ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝   
+        </pre>
+
+        <div id=\"bootLog\" class=\"boot-log\" data-testid=\"boot-log\" aria-live=\"polite\"></div>
+
+        <div id=\"passPrompt\" class=\"pass-prompt hidden\" data-testid=\"pass-prompt\">
+          <span class=\"prompt-user\">root@vault</span><span class=\"prompt-sep\">:</span><span class=\"prompt-path\">~</span><span class=\"prompt-sep\">$</span>
+          <span class=\"prompt-cmd\">sudo unlock --key </span><span id=\"typedPass\" class=\"typed-pass\"></span><span class=\"caret\">▊</span>
+        </div>
+
+        <div id=\"grantedBlock\" class=\"granted hidden\" data-testid=\"granted-block\">
+          <div class=\"granted-line\">[ <span class=\"ok\">OK</span> ] handshake complete</div>
+          <div class=\"granted-line\">[ <span class=\"ok\">OK</span> ] key derivation online (PBKDF2 / SHA-256 / 100k)</div>
+          <div class=\"granted-line\">[ <span class=\"ok\">OK</span> ] AES-256-GCM cipher armed</div>
+          <div class=\"granted-big\">&gt;&gt; ACCESS GRANTED &lt;&lt;</div>
+          <button id=\"enterBtn\" class=\"enter-btn\" data-testid=\"enter-btn\" type=\"button\">
+            <span class=\"enter-inner\">[ ENTER THE VAULT ]</span>
+          </button>
+          <div class=\"hint\">press <kbd>Enter</kbd> or click above</div>
+        </div>
+      </div>
+
+      <footer class=\"crt-footbar\">
+        <span>encoding: utf-8</span>
+        <span>cipher: aes-256-gcm</span>
+        <span>net: <span class=\"ok\">offline</span></span>
+        <span class=\"blink\">●</span>
+      </footer>
+    </div>
+  </section>
+
+  <!-- ========== NOTIFICATION ========== -->
+  <div id=\"notification\" class=\"notification hidden\" data-testid=\"notification\" role=\"status\"></div>
+
+  <!-- ========== APP CONTAINER ========== -->
+  <main class=\"container\" id=\"appRoot\" data-testid=\"app-root\">
+
+    <!-- Header -->
+    <header class=\"app-header\" data-testid=\"app-header\">
+      <div class=\"header-left\">
+        <div class=\"brand\">
+          <span class=\"brand-bracket\">[</span>
+          <span class=\"brand-name\">CHAI<span class=\"brand-slash\">://</span>VAULT</span>
+          <span class=\"brand-bracket\">]</span>
+        </div>
+        <div class=\"tagline\" data-testid=\"tagline\">encrypt.local // zero-trust // offline-first</div>
+      </div>
+      <div class=\"header-right\">
+        <div class=\"status-pill\" data-testid=\"status-offline\">
+          <span class=\"status-dot\"></span> OFFLINE
+        </div>
+        <div class=\"status-pill alt\" data-testid=\"status-cipher\">
+          AES-256-GCM
+        </div>
+      </div>
+    </header>
+
+    <div class=\"marquee\" aria-hidden=\"true\">
+      <div class=\"marquee-inner\">
+        <span>// NOTHING LEAVES YOUR DEVICE //</span>
+        <span>// SESSION MEMORY ONLY //</span>
+        <span>// REFRESH = WIPE //</span>
+        <span>// AUDIT THE CODE //</span>
+        <span>// NOTHING LEAVES YOUR DEVICE //</span>
+        <span>// SESSION MEMORY ONLY //</span>
+        <span>// REFRESH = WIPE //</span>
+        <span>// AUDIT THE CODE //</span>
+      </div>
+    </div>
+
+    <!-- Secret Key -->
+    <section class=\"card\" data-testid=\"card-key\">
+      <div class=\"card-title\">
+        <span class=\"dot\"></span>
+        <h2>01 &mdash; secret_key</h2>
+      </div>
+      <div class=\"card-header\">
+        <label for=\"secretKey\">master passphrase</label>
+        <button class=\"ghost mini\" id=\"toggleKeyBtn\" data-testid=\"toggle-key-btn\" type=\"button\">
+          <span id=\"toggleText\">show</span>
+        </button>
+      </div>
+      <input type=\"password\" id=\"secretKey\" data-testid=\"secret-key-input\"
+             placeholder=\"&gt;&gt; enter your secret key (min 8 chars)\" autocomplete=\"off\" spellcheck=\"false\" />
+      <div class=\"meter\" data-testid=\"key-meter\"><div class=\"meter-fill\" id=\"keyMeter\"></div></div>
+      <div class=\"char-count\">
+        <span id=\"keyLength\">0</span> chars &nbsp;·&nbsp;
+        <span id=\"keyStatus\" data-testid=\"key-status\">no key entered</span>
+      </div>
+    </section>
+
+    <!-- Encrypt -->
+    <section class=\"card accent-cyan\" data-testid=\"card-encrypt\">
+      <div class=\"card-title\">
+        <span class=\"dot cyan\"></span>
+        <h2>02 &mdash; encrypt</h2>
+      </div>
+
+      <div class=\"form-group\">
+        <label for=\"accountName\">account label</label>
+        <input type=\"text\" id=\"accountName\" data-testid=\"account-name-input\"
+               placeholder=\"e.g. github / gmail / discord\" autocomplete=\"off\" spellcheck=\"false\" />
+      </div>
+
+      <div class=\"form-group\">
+        <label for=\"plainText\">plain text</label>
+        <textarea id=\"plainText\" data-testid=\"plain-text-input\"
+                  placeholder=\"enter password or secret note...\"></textarea>
+        <div class=\"char-count\"><span id=\"plainLength\">0</span> chars</div>
+      </div>
+
+      <button class=\"button-full primary\" id=\"encryptBtn\" data-testid=\"encrypt-btn\" type=\"button\">
+        <span class=\"btn-icon\">&gt;_</span> encrypt payload
       </button>
-    </div>
-    <input type="password" id="secretKey" placeholder="Enter your secret key (min 8 characters)" />
-    <div class="char-count">
-      <span id="keyLength">0</span> characters • <span id="keyStatus">No key entered</span>
-    </div>
-  </div>
 
-  <!-- Encrypt Card -->
-  <div class="card">
-    <h2>🔒 Encrypt</h2>
-    
-    <div class="form-group">
-      <label>Account Name</label>
-      <input type="text" id="accountName" placeholder="e.g., GitHub, Gmail, Discord" />
-    </div>
+      <div id=\"encryptedBox\" class=\"output-box hidden\" data-testid=\"encrypted-box\">
+        <div class=\"output-header\">
+          <span>encrypted_output.b64</span>
+          <span class=\"pulse\">●</span>
+        </div>
+        <textarea id=\"encryptedOutput\" data-testid=\"encrypted-output\" readonly></textarea>
+        <button class=\"ghost button-full\" id=\"copyEncryptedBtn\" data-testid=\"copy-encrypted-btn\" type=\"button\">
+          copy to clipboard
+        </button>
+      </div>
+    </section>
 
-    <div class="form-group">
-      <label>Plain Text</label>
-      <textarea id="plainText" placeholder="Enter password or note"></textarea>
-      <div class="char-count"><span id="plainLength">0</span> characters</div>
-    </div>
+    <!-- Decrypt -->
+    <section class=\"card accent-magenta\" data-testid=\"card-decrypt\">
+      <div class=\"card-title\">
+        <span class=\"dot magenta\"></span>
+        <h2>03 &mdash; decrypt</h2>
+      </div>
 
-    <button class="button-full" id="encryptBtn">🔒 Encrypt</button>
+      <div class=\"form-group\">
+        <label for=\"decryptInput\">encrypted text</label>
+        <textarea id=\"decryptInput\" data-testid=\"decrypt-input\"
+                  placeholder=\"paste base64 encrypted payload...\"></textarea>
+      </div>
 
-    <div id="encryptedBox" class="encrypted-display hidden">
-      <div class="display-header">Encrypted Output</div>
-      <textarea id="encryptedOutput" readonly style="cursor: pointer;"></textarea>
-      <button class="secondary" id="copyEncryptedBtn" style="width: 100%;">Copy to Clipboard</button>
-    </div>
-  </div>
-
-  <!-- Decrypt Card -->
-  <div class="card">
-    <h2>🔓 Decrypt</h2>
-    
-    <div class="form-group">
-      <label>Encrypted Text</label>
-      <textarea id="decryptInput" placeholder="Paste encrypted text here"></textarea>
-    </div>
-
-    <button class="button-full" id="decryptBtn">🔓 Decrypt</button>
-
-    <div id="decryptedBox" class="decrypted-display hidden">
-      <div class="display-header">Decrypted Output</div>
-      <textarea id="decryptedOutput" readonly style="min-height: 80px;"></textarea>
-      <button class="secondary button-full" id="copyDecryptedBtn" style="margin-top: 12px;">
-        Copy to Clipboard
+      <button class=\"button-full primary\" id=\"decryptBtn\" data-testid=\"decrypt-btn\" type=\"button\">
+        <span class=\"btn-icon\">&lt;/</span> decrypt payload
       </button>
-    </div>
-  </div>
 
-  <!-- Vault Card -->
-  <div id="vaultCard" class="card hidden">
-    <h2>💼 Vault (<span id="vaultCount">0</span>)</h2>
-    <div id="vaultList"></div>
-  </div>
+      <div id=\"decryptedBox\" class=\"output-box hidden\" data-testid=\"decrypted-box\">
+        <div class=\"output-header\">
+          <span>plaintext.out</span>
+          <span class=\"pulse\">●</span>
+        </div>
+        <textarea id=\"decryptedOutput\" data-testid=\"decrypted-output\" readonly></textarea>
+        <button class=\"ghost button-full\" id=\"copyDecryptedBtn\" data-testid=\"copy-decrypted-btn\" type=\"button\">
+          copy to clipboard
+        </button>
+      </div>
+    </section>
 
-  <!-- Footer -->
-  <div class="footer">
-    <div class="footer-line">AES-256 Encryption | Offline | Zero Storage</div>
-    <div class="footer-line">In-Memory Only | Refresh = Cleared | Open Source</div>
-  </div>
-</div>
+    <!-- Vault -->
+    <section id=\"vaultCard\" class=\"card hidden\" data-testid=\"vault-card\">
+      <div class=\"card-title\">
+        <span class=\"dot\"></span>
+        <h2>04 &mdash; session_vault (<span id=\"vaultCount\" data-testid=\"vault-count\">0</span>)</h2>
+      </div>
+      <div id=\"vaultList\" data-testid=\"vault-list\"></div>
+    </section>
 
-<script src="script.js"></script>
+    <!-- Footer -->
+    <footer class=\"app-footer\" data-testid=\"app-footer\">
+      <div class=\"foot-row\">// aes-256-gcm · pbkdf2-100k · zero storage</div>
+      <div class=\"foot-row\">// session memory only · refresh = wipe · open source</div>
+      <div class=\"foot-row muted\">
+        &lt;/&gt; crafted for the paranoid — 
+        <a href=\"https://github.com/codex-007-ai/Chai-vault\" target=\"_blank\" rel=\"noopener\" data-testid=\"github-link\">audit on github</a>
+      </div>
+    </footer>
+  </main>
 
-<script>
-const canvas = document.getElementById("matrix");
-const ctx = canvas.getContext("2d");
-
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-const chars = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%^&*";
-const fontSize = 14;
-const columns = canvas.width / fontSize;
-
-const drops = [];
-
-for(let i = 0; i < columns; i++){
-  drops[i] = 1;
-}
-
-function draw(){
-  ctx.fillStyle = "rgba(0,0,0,0.05)";
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-
-  ctx.fillStyle = "#00ff00";
-  ctx.font = fontSize + "px monospace";
-
-  for(let i = 0; i < drops.length; i++){
-    const text = chars[Math.floor(Math.random()*chars.length)];
-    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-    if(drops[i] * fontSize > canvas.height && Math.random() > 0.975){
-      drops[i] = 0;
-    }
-
-    drops[i]++;
-  }
-}
-
-setInterval(draw, 35);
-
-window.addEventListener("resize", () => {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
-</script>  
+  <script src=\"script.js\"></script>
 </body>
-  <canvas id="matrix"></canvas>
 </html>
+"
+Observation: Overwrite successful: /app/index.html
