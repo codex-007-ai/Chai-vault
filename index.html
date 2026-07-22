@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Chai Vault - Privacy-first offline password encryption">
+  <meta name="theme-color" content="#0f172a">
+  <title>🔐 Chai Vault - Offline Encryption</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🔐</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+  <!-- Notification -->
+  <div id="notification" class="notification hidden"></div>
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">🔐 Chai Vault</div>
+    <div class="tagline">Privacy-first offline encryption</div>
+    <div class="subtitle">Nothing leaves your device</div>
+  </div>
+
+  <!-- Secret Key Card -->
+  <div class="card">
+    <div class="card-header">
+      <label>Secret Key</label>
+      <button class="secondary" id="toggleKeyBtn" style="padding: 6px 12px; font-size: 12px;">
+        👁️ <span id="toggleText">Show</span>
+      </button>
+    </div>
+    <input type="password" id="secretKey" placeholder="Enter your secret key (min 8 characters)" />
+    <div class="char-count">
+      <span id="keyLength">0</span> characters • <span id="keyStatus">No key entered</span>
+    </div>
+  </div>
+
+  <!-- Encrypt Card -->
+  <div class="card">
+    <h2>🔒 Encrypt</h2>
+    
+    <div class="form-group">
+      <label>Account Name</label>
+      <input type="text" id="accountName" placeholder="e.g., GitHub, Gmail, Discord" />
+    </div>
+
+    <div class="form-group">
+      <label>Plain Text</label>
+      <textarea id="plainText" placeholder="Enter password or note"></textarea>
+      <div class="char-count"><span id="plainLength">0</span> characters</div>
+    </div>
+
+    <button class="button-full" id="encryptBtn">🔒 Encrypt</button>
+
+    <div id="encryptedBox" class="encrypted-display hidden">
+      <div class="display-header">Encrypted Output</div>
+      <textarea id="encryptedOutput" readonly style="cursor: pointer;"></textarea>
+      <button class="secondary" id="copyEncryptedBtn" style="width: 100%;">Copy to Clipboard</button>
+    </div>
+  </div>
+
+  <!-- Decrypt Card -->
+  <div class="card">
+    <h2>🔓 Decrypt</h2>
+    
+    <div class="form-group">
+      <label>Encrypted Text</label>
+      <textarea id="decryptInput" placeholder="Paste encrypted text here"></textarea>
+    </div>
+
+    <button class="button-full" id="decryptBtn">🔓 Decrypt</button>
+
+    <div id="decryptedBox" class="decrypted-display hidden">
+      <div class="display-header">Decrypted Output</div>
+      <textarea id="decryptedOutput" readonly style="min-height: 80px;"></textarea>
+      <button class="secondary button-full" id="copyDecryptedBtn" style="margin-top: 12px;">
+        Copy to Clipboard
+      </button>
+    </div>
+  </div>
+
+  <!-- Vault Card -->
+  <div id="vaultCard" class="card hidden">
+    <h2>💼 Vault (<span id="vaultCount">0</span>)</h2>
+    <div id="vaultList"></div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-line">AES-256 Encryption | Offline | Zero Storage</div>
+    <div class="footer-line">In-Memory Only | Refresh = Cleared | Open Source</div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
