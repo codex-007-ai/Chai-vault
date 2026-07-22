@@ -44,6 +44,21 @@ body {
   line-height: 1.6;
   padding: 20px;
   text-shadow: 0 0 5px rgba(0, 255, 0, 0.5);
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+
+  background:
+  repeating-linear-gradient(
+    transparent 0px,
+    rgba(0,255,0,0.03) 1px,
+    transparent 2px
+  );
+
+  z-index:9999;
+}
 }
 
 .container {
