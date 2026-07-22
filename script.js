@@ -17,7 +17,7 @@ const state = {
   const ctx = canvas.getContext('2d');
 
   let width = 0, height = 0, columns = 0, drops = [], fontSize = 16;
-  const chars = '01ABCDEFGHIJKLMNOPQRSTUVWXYZ<>#$%&*+=/\\|{}[]日ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍｦｲｸｺｿﾁﾄﾉﾌﾔﾖﾙﾚﾛﾝ';
+  const chars = '123456789@CHAITANYA@19062009<>#$%&*+=/\\|{}[]日ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍｦｲｸｺｿﾁﾄﾉﾌﾔﾖﾙﾚﾛﾝ';
 
   function resize() {
     const dpr = window.devicePixelRatio || 1;
