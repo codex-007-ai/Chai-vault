@@ -1,10 +1,3 @@
-
-Action: file_editor create /app/script.js --file-text "/* ============================================================================
-   CHAI://VAULT — main script
-   Pure static, no dependencies. Runs 100% in the browser.
-   Compatible with GitHub Pages.
-============================================================================ */
-
 // ---------------------------------------------------------------------------
 // STATE
 // ---------------------------------------------------------------------------
@@ -444,5 +437,3 @@ document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('encryptedOutput').addEventListener('click',
     () => copyToClipboard('encryptedOutput'));
 });
-"
-Observation: Overwrite successful: /app/script.js
